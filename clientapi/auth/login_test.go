@@ -71,6 +71,11 @@ func TestLoginFromJSONReader(t *testing.T) {
 						ServerName: serverName,
 					},
 				},
+				Login: config.Login{
+					SSO: config.SSO{
+						Enabled: true,
+					},
+				},
 			}
 			login, cleanup, err := LoginFromJSONReader(ctx, strings.NewReader(tst.Body), &userAPI, &userAPI, cfg)
 			if err != nil {
@@ -149,6 +154,11 @@ func TestBadLoginFromJSONReader(t *testing.T) {
 				Matrix: &config.Global{
 					SigningIdentity: gomatrixserverlib.SigningIdentity{
 						ServerName: serverName,
+					},
+				},
+				Login: config.Login{
+					SSO: config.SSO{
+						Enabled: true,
 					},
 				},
 			}
