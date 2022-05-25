@@ -22,7 +22,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/matrix-org/gomatrixserverlib"
 	"github.com/matrix-org/util"
-	"github.com/nats-io/nats.go"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/sirupsen/logrus"
 
@@ -64,6 +63,8 @@ func Setup(
 	extRoomsProvider api.ExtraPublicRoomsProvider,
 	mscCfg *config.MSCs, natsClient *nats.Conn,
 ) {
+	ctx := context.Background()
+
 	prometheus.MustRegister(amtRegUsers, sendEventDuration)
 
 	rateLimits := httputil.NewRateLimits(&cfg.RateLimiting)
@@ -72,7 +73,7 @@ func Setup(
 	var ssoAuthenticator *sso.Authenticator
 	if cfg.Login.SSO.Enabled {
 		var err error
-		ssoAuthenticator, err = sso.NewAuthenticator(&cfg.Login.SSO)
+		ssoAuthenticator, err = sso.NewAuthenticator(ctx, &cfg.Login.SSO)
 		if err != nil {
 			logrus.WithError(err).Fatal("failed to create SSO authenticator")
 		}
@@ -648,14 +649,14 @@ func Setup(
 
 	v3mux.Handle("/login/sso/redirect",
 		httputil.MakeExternalAPI("login", func(req *http.Request) util.JSONResponse {
-			return SSORedirect(req, "", ssoAuthenticator)
+			return SSORedirect(req, "", ssoAuthenticator, &cfg.Login.SSO)
 		}),
 	).Methods(http.MethodGet, http.MethodOptions)
 
 	v3mux.Handle("/login/sso/redirect/{idpID}",
 		httputil.MakeExternalAPI("login", func(req *http.Request) util.JSONResponse {
 			vars := mux.Vars(req)
-			return SSORedirect(req, vars["idpID"], ssoAuthenticator)
+			return SSORedirect(req, vars["idpID"], ssoAuthenticator, &cfg.Login.SSO)
 		}),
 	).Methods(http.MethodGet, http.MethodOptions)
 
