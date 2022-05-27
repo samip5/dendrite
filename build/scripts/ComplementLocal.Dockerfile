@@ -28,6 +28,7 @@ RUN echo '\
 
 # This script runs Dendrite for us. Must be run in the /runtime directory.
 RUN echo '\
+<<<<<<< HEAD
     #!/bin/bash -eu \n\
     ./generate-keys --private-key matrix_key.pem \n\
     ./generate-keys -keysize 1024 --server $SERVER_NAME --tls-cert server.crt --tls-key server.key --tls-authority-cert /complement/ca/ca.crt --tls-authority-key /complement/ca/ca.key \n\
