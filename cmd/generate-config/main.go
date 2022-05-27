@@ -66,6 +66,27 @@ func main() {
 		if *defaultsForCI {
 			cfg.AppServiceAPI.DisableTLSValidation = true
 			cfg.ClientAPI.RateLimiting.Enabled = false
+			cfg.ClientAPI.Login.SSO.Enabled = true
+			cfg.ClientAPI.Login.SSO.Providers = []config.IdentityProvider{
+				{
+					ID:   "github",
+					Name: "Fake GitHub",
+					OIDC: config.OIDC{
+						ClientID:     "aclientid",
+						ClientSecret: "aclientsecret",
+					},
+				},
+				{
+					ID:   "google",
+					Name: "Fake Google",
+					Type: "oidc",
+					OIDC: config.OIDC{
+						ClientID:     "aclientid",
+						ClientSecret: "aclientsecret",
+						DiscoveryURL: "https://accounts.google.com/.well-known/openid-configuration",
+					},
+				},
+			}
 			cfg.FederationAPI.DisableTLSValidation = false
 			// don't hit matrix.org when running tests!!!
 			cfg.FederationAPI.KeyPerspectives = config.KeyPerspectives{}
@@ -79,6 +100,7 @@ func main() {
 			cfg.ClientAPI.RegistrationDisabled = false
 			cfg.ClientAPI.OpenRegistrationWithoutVerificationEnabled = true
 			cfg.ClientAPI.RegistrationSharedSecret = "complement"
+
 			cfg.Global.Presence = config.PresenceOptions{
 				EnableInbound:  true,
 				EnableOutbound: true,
@@ -94,7 +116,25 @@ func main() {
 		var err error
 		if cfg, err = config.Load(*normalise, !*polylith); err != nil {
 			panic(err)
-		}
+=======
+		},
+	}
+	cfg.MediaAPI.ThumbnailSizes = []config.ThumbnailSize{
+		{
+			Width:        32,
+			Height:       32,
+			ResizeMethod: "crop",
+		},
+		{
+			Width:        96,
+			Height:       96,
+			ResizeMethod: "crop",
+		},
+		{
+			Width:        640,
+			Height:       480,
+			ResizeMethod: "scale",
+		},
 	}
 
 	j, err := yaml.Marshal(cfg)
