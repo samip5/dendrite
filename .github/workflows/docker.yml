@@ -12,9 +12,9 @@ on:
         required: true
 
 env:
-  DOCKER_NAMESPACE: matrixdotorg
+  DOCKER_NAMESPACE: samip537
   DOCKER_HUB_USER: dendritegithub
-  GHCR_NAMESPACE: matrix-org
+  GHCR_NAMESPACE: samip5
   PLATFORMS: linux/amd64,linux/arm64,linux/arm/v7
 
 jobs:
@@ -40,11 +40,11 @@ jobs:
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ env.DOCKER_HUB_USER }}
-          password: ${{ secrets.DOCKER_TOKEN }}
+      #- name: Login to Docker Hub
+      #  uses: docker/login-action@v1
+      #  with:
+      #    username: ${{ env.DOCKER_HUB_USER }}
+      #    password: ${{ secrets.DOCKER_TOKEN }}
       - name: Login to GitHub Containers
         uses: docker/login-action@v2
         with:
@@ -53,7 +53,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build main monolith image
-        if: github.ref_name == 'main'
+       # if: github.ref_name == 'main'
         id: docker_build_monolith
         uses: docker/build-push-action@v3
         with:
@@ -65,7 +65,7 @@ jobs:
           platforms: ${{ env.PLATFORMS }}
           push: true
           tags: |
-            ${{ env.DOCKER_NAMESPACE }}/dendrite-monolith:${{ github.ref_name }}
+          #  ${{ env.DOCKER_NAMESPACE }}/dendrite-monolith:${{ github.ref_name }}
             ghcr.io/${{ env.GHCR_NAMESPACE }}/dendrite-monolith:${{ github.ref_name }}
 
       - name: Build release monolith image
@@ -120,11 +120,11 @@ jobs:
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ env.DOCKER_HUB_USER }}
-          password: ${{ secrets.DOCKER_TOKEN }}
+      #- name: Login to Docker Hub
+      #  uses: docker/login-action@v1
+      #  with:
+      #    username: ${{ env.DOCKER_HUB_USER }}
+      #    password: ${{ secrets.DOCKER_TOKEN }}
       - name: Login to GitHub Containers
         uses: docker/login-action@v2
         with:
