@@ -40,6 +40,7 @@ jobs:
         run: |
           echo "BUILD=$(git rev-parse --short HEAD || "") >> $GITHUB_ENV
           BRANCH=$(git symbolic-ref --short HEAD | tr -d \/)
+          [ ${BRANCH} == "main" ] && BRANCH=""
           echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
