@@ -18,63 +18,6 @@ env:
   PLATFORMS: linux/amd64,linux/arm64,linux/arm/v7
 
 jobs:
-  monolith-arm64:
-    name: Monolith image (arm64)
-    runs-on: self-hosted
-    permissions:
-      contents: read
-      packages: write
-      security-events: write # To upload Trivy sarif files
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Get release tag & build flags
-        if: github.event_name == 'release' # Only for GitHub releases
-        run: |
-          echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-          echo "BUILD=$(git rev-parse --short HEAD || \"\")" >> $GITHUB_ENV
-          BRANCH=$(git symbolic-ref --short HEAD | tr -d \/)
-          [ ${BRANCH} == "main" ] && BRANCH=""
-        uses: actions/checkout@v2
-      - name: Custom tag
-        run: |
-          echo "BUILD=$(git rev-parse --short HEAD || "")" >> $GITHUB_ENV
-          BRANCH=$(git symbolic-ref --short HEAD | tr -d \/)
-          [ ${BRANCH} == "main" ] && BRANCH=""
-          echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      #- name: Login to Docker Hub
-      #  uses: docker/login-action@v1
-      #  with:
-      #    username: ${{ env.DOCKER_HUB_USER }}
-      #    password: ${{ secrets.DOCKER_TOKEN }}
-      - name: Login to GitHub Containers
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build main monolith image
-       # if: github.ref_name == 'main'
-        id: docker_build_monolith
-        uses: docker/build-push-action@v3
-        with:
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          context: .
-          build-args: FLAGS=-X github.com/matrix-org/dendrite/internal.branch=${{ env.BRANCH }} -X github.com/matrix-org/dendrite/internal.build=${{ env.BUILD }}
-          target: monolith
-          file: ./build/docker/Dockerfile.monolith
-          build-args: FLAGS="-X github.com/matrix-org/dendrite/internal.branch=${{ env.BRANCH }} -X github.com/matrix-org/dendrite/internal.build=${{ env.BUILD }}"
-          platforms: arm64
-          push: true
-          tags: |
-            ghcr.io/${{ env.GHCR_NAMESPACE }}/dendrite-monolith:${{ github.ref_name }}-arm64
-
   monolith:
     name: Monolith image
     runs-on: ubuntu-latest
