@@ -61,7 +61,7 @@ jobs:
           cache-to: type=gha,mode=max
           context: .
           file: ./build/docker/Dockerfile.monolith
-          build-args: FLAGS="-X github.com/matrix-org/dendrite/internal.branch=${{ env.BRANCH }} -X github.com/matrix-org/dendrite/internal.build=${{ env.BUILD }}"
+          build-args: FLAGS=-X github.com/matrix-org/dendrite/internal.branch=${{ env.BRANCH }} -X github.com/matrix-org/dendrite/internal.build=${{ env.BUILD }}
           platforms: ${{ env.PLATFORMS }}
           push: true
           tags: |
