@@ -63,8 +63,6 @@ func Setup(
 	extRoomsProvider api.ExtraPublicRoomsProvider,
 	mscCfg *config.MSCs, natsClient *nats.Conn,
 ) {
-	ctx := context.Background()
-
 	prometheus.MustRegister(amtRegUsers, sendEventDuration)
 
 	rateLimits := httputil.NewRateLimits(&cfg.RateLimiting)
