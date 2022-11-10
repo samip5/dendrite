@@ -53,7 +53,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build main monolith image
-        if: github.ref_name == 'main'
+        #if: github.ref_name == 'main'
         id: docker_build_monolith
         uses: docker/build-push-action@v3
         with:
